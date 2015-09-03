@@ -1,0 +1,69 @@
+{{define "subject"}}Welcome to Content Pusher - Info for Login and Usage{{end}}
+{{define "body_html"}}
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<title> Content Pusher - Info for Login and Usage </title>
+</head>
+<body>
+<pre>  
+ 
+	Welcome:  {{.toname}} 
+
+	Save this email - it has your initial password in it.
+
+	Content Pusher allows you to push out changes to a web page to multiple browsers and platforms.
+	<a href="http://www.2c-why.com/content-pusher/doc.html">Documentation</a> and videos on how to use it.
+
+	To Confirm you registration you MUST follow this link (either click on it or cut/paste it into a browser):
+		<a href="http://www.2c-why.com/cp-tool#/confirm-registration?auth_token={{.p2}}">http://www.2c-why.com/cp-tool#/confirm-registration?auth_token={{.p2}}</a>
+
+	To access the content pusher tool:
+
+	Your login information is:
+		Your Email: {{.to}} 
+		Your Password: {{.p1}} 
+
+	You can change the password in the tool.
+
+	You have received this email because you created an account on <a href="http://www.2c-why.com/content-pusher">http://www.2c-why.com/content-pusher</a>.
+	If you do not want this account then follow the "unsubscribe" link at the bottom. 
+
+	<a href="http://www.2c-why.com/cp-tool#/unsubscribe">unsubscribe</a>
+
+	(Privacy Statment - we have no intention of sharing your email address with anybody or any other compaines.)
+
+</pre>  
+</body>
+</html>
+{{end}}
+{{define "body_text"}}
+    
+	Welcome:  {{.toname}} 
+
+	Save this email - it has your initial password in it.
+
+	Content Pusher allows you to push out changes to a web page to multiple browsers and platforms.
+	Documentation ( http://www.2c-why.com/content-pusher/doc.html ) and videos on how to use it.
+
+	To Confirm you registration you cut/paste the link into a browser:
+		http://www.2c-why.com/cp-tool#/confirm-registration?auth_token={{.p2}}
+
+	To access the content pusher tool:
+
+	Your login information is:
+		Your Email: {{.to}} 
+		Your Password: {{.p1}} 
+
+	You can change the password in the tool.
+
+	You have received this email because you created an account on http://www.2c-why.com/content-pusher .
+	If you do not want this account then follow the "unsubscribe" link at the bottom. 
+
+	To Unsubscribe cut/paste the link into a browser:
+		http://www.2c-why.com/cp-tool#/unsubscribe
+
+	(Privacy Statment - we have no intention of sharing your email address with anybody or any other compaines.)
+    
+{{end}}

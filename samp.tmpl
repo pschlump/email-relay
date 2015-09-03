@@ -1,0 +1,36 @@
+{{define "subject"}}Welcome!  Click below to complete your registration{{end}}
+{{define "body_html"}}
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+</head>
+<body>
+Hello, {{.real_name}}<br>
+This is to confirm your registration to {{.website}}<br>
+<br>
+Please follow the link below or cut and paste it into a browser to complete yor registration.<br>
+<br>
+<a style="font-size:18px; font-weight:bold;padding-left:20px;" href="{{.url}}/{{.email_token}}"> {{.url}}/{{.email_token}} </a><br>
+<br>
+A temporary password has been created for you.   You can change it under the configuration menu.<br>
+Your temporary account is good for 30 days.  Welcome!<br>
+<br>
+<span style="font-size:8px;">HTML Msg, registration.tmpl, v1.0.0 </span><br>
+
+</body>
+</html>
+{{end}}
+{{define "body_text"}}
+Hello, {{.real_name}}
+This is to confirm your registration to {{.website}}
+
+Please cut and paste the link below into a browser to complete yor registration.
+
+    {{.url}}/{{.email_token}}
+
+A temporary password has been created for you.   You can change it under the configuration menu.
+Your temporary account is good for 30 days.  Welcome!
+
+TEXT Msg, registration.tmpl, v1.0.0
+{{end}}
