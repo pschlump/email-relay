@@ -54,6 +54,6 @@ func JsonP_Param(s string, res http.ResponseWriter, callback string) string {
 }
 
 // For non-JSONP callable - just prepend the prefix and return.
-func PrepenPrefix(s string) string {
+func PrependPrefix(s string) string {
 	return JSON_Prefix + s
 }
