@@ -111,6 +111,8 @@ var Errs = 0
 var fo *os.File
 var startup_timestamp string
 
+// Note: You MUST supply full hard paths for --cfg and --emailCfgFile if you run this program in a chroot jail!
+
 var opts struct {
 	EmailCfgFN string `short:"e" long:"emailCfgFile"  description:"Path to email config"         default:"~/.email/email-config.json"`
 	CfgFN      string `short:"c" long:"cfg"           description:"email configuration file"     default:"~/.email/email-auth.cfg"`

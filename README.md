@@ -32,12 +32,12 @@ Example:
 {
 	"HostIP":"",
 	"Port":"80",
-	"WWWPath":"/home/ubuntu/www/www_defaulit_com",
+	"WWWPath":"/home/ubuntu/www/www_default_com",
 	"Auth":"mypassword",
 	"Cert":"/home/ubuntu/cfg/cert.pem",
 	"Key":"/home/ubuntu/cfg/key.pem",
 	"MonitorURL": "no",
-	"DebugEmailAddr", "pschlump@yahoo.com",
+	"DebugEmailAddr": "pschlump@yahoo.com",
 	"ApprovedApps": { "content-pusher" : "yes" }
 }
 
