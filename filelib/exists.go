@@ -1,3 +1,8 @@
+//
+// Copyright (C) Philip Schlump, 2013-2015.
+// Version: 1.0.2
+// Tested on Wed Sep  2 21:28:25 MDT 2015
+//
 package filelib
 
 import "os"

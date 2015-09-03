@@ -14,7 +14,7 @@ import (
 	"net/http"
 	"time"
 
-	"../go-lib/tr"
+	tr "github.com/pschlump/godebug" // "../go-lib/tr" // "www.2c-why.com/go-lib/tr"
 )
 
 func doGet(client *http.Client, url string) string {

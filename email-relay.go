@@ -3,7 +3,7 @@
 //
 // Copyright (C) Philip Schlump, 2013-2015.
 // Version: 1.0.2
-// Tested on Sun Aug 30 08:59:12 MDT 2015
+// Tested on Wed Sep  2 21:28:25 MDT 2015
 //
 
 /*
