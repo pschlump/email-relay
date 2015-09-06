@@ -96,9 +96,13 @@ type CfgType struct {
 	IPAuth         map[string]string //
 	DebugEmailAddr string            // if not empty then this runs on the db_send_to_me flag and sends all email to this address.
 	FromEmailAddr  string            //
+	MapToEmailAddr []string          //	A set of email addresses that if you have anybody at that address will get maped to "MapDestAddr" - to match a dest use @pschlump.com
+	MapDestAddr    string            // An address to send to as a replacement address
 	DebugLog       int               // 0: off, 1: lots, 2: everything
 	AuthReloadCfg  string            // Key for reaload of cfg fiels and log rotation
 }
+
+// The prupose for MapToEmailAddr , MapDestAddr and RemoteLog are to allow for debug testing of email. (RemoteLog not implemented yet)
 
 var db_send_to_me = false
 
@@ -332,8 +336,18 @@ func handleSend(res http.ResponseWriter, req *http.Request) {
 			oneRow["app"] = dApp
 			oneRow["tmpl"] = dTmpl
 			oneRow["to"] = dTo
+			for _, vv := range Cfg.MapToEmailAddr {
+				if strings.HasSuffix(dTo, vv) {
+					LogIt()
+					if Cfg.MapDestAddr != "" {
+						dTo = Cfg.MapDestAddr
+					} else {
+						dTo = "pschlump@yahoo.com"
+					}
+				}
+			}
 			if db_send_to_me {
-				dTo = Cfg.DebugEmailAddr // hh"pschlump@gmail.com"
+				dTo = Cfg.DebugEmailAddr
 			}
 			oneRow["toname"] = dToName
 			oneRow["from"] = dFrom
@@ -373,8 +387,18 @@ func handleSend(res http.ResponseWriter, req *http.Request) {
 				dSubject = "No Subject"
 			}
 
+			for _, vv := range Cfg.MapToEmailAddr {
+				if strings.HasSuffix(dTo, vv) {
+					LogIt()
+					if Cfg.MapDestAddr != "" {
+						dTo = Cfg.MapDestAddr
+					} else {
+						dTo = "pschlump@yahoo.com"
+					}
+				}
+			}
 			if db_send_to_me {
-				dTo = Cfg.DebugEmailAddr // hh"pschlump@gmail.com"
+				dTo = Cfg.DebugEmailAddr
 			}
 
 			if dBodyText == "" || dTo == "" || dFrom == "" {
