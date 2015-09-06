@@ -55,14 +55,12 @@ import (
 	// "www.2c-why.com/go-lib/sizlib" // "../go-lib/sizlib"
 )
 
-const BuildNo = "08"
+const BuildNo = "09"
 
 /*
 
 TODO:
 	1. Auth-Notify ever X emails or erros sent
-	3. push up to github.com as an open source project
-	4. Document it
 
 Sample Configuration File
 =========================
@@ -82,24 +80,25 @@ Sample Configuration File
 */
 
 type CfgType struct {
-	HostIP         string            //
-	Port           string            //
-	HttpsPort      string            //
-	WWWPath        string            //
-	TmplPath       string            //
-	Auth           string            // if using IPAuth then set this to "per-ip"
-	Cert           string            //
-	Key            string            //
-	LogFile        string            //
-	MonitorURL     string            //
-	ApprovedApps   map[string]string // Array of approved applications
-	IPAuth         map[string]string //
-	DebugEmailAddr string            // if not empty then this runs on the db_send_to_me flag and sends all email to this address.
-	FromEmailAddr  string            //
-	MapToEmailAddr []string          //	A set of email addresses that if you have anybody at that address will get maped to "MapDestAddr" - to match a dest use @pschlump.com
-	MapDestAddr    string            // An address to send to as a replacement address
-	DebugLog       int               // 0: off, 1: lots, 2: everything
-	AuthReloadCfg  string            // Key for reaload of cfg fiels and log rotation
+	HostIP            string            //
+	Port              string            //
+	HttpsPort         string            //
+	WWWPath           string            //
+	TmplPath          string            //
+	Auth              string            // if using IPAuth then set this to "per-ip"
+	Cert              string            //
+	Key               string            //
+	LogFile           string            //
+	MonitorURL        string            //
+	ApprovedApps      map[string]string // Array of approved applications
+	IPAuth            map[string]string //
+	DebugEmailAddr    string            // if not empty then this runs on the db_send_to_me flag and sends all email to this address.
+	FromEmailAddr     string            //
+	MapToEmailAddr    []string          //	A set of email addresses that if you have anybody at that address will get maped to "MapDestAddr" - to match a dest use @pschlump.com
+	MapDestAddr       string            // An address to send to as a replacement address
+	DebugLog          int               // 0: off, 1: lots, 2: everything
+	AuthReloadCfg     string            // Key for reaload of cfg fiels and log rotation
+	LogSuccessfulSend string            // if 'y' then will log successful sends to log file
 }
 
 // The prupose for MapToEmailAddr , MapDestAddr and RemoteLog are to allow for debug testing of email. (RemoteLog not implemented yet)
@@ -427,6 +426,8 @@ func handleSend(res http.ResponseWriter, req *http.Request) {
 			fmt.Fprintf(fo, "Error: EmailError: %s %q %s\n", ip, err, ts)
 			io.WriteString(res, jsonp.JsonP(fmt.Sprintf(`{"status":"error","msg":"email error","err":%q, "message":{ "to":%q, "toname":%q, "from":%q, "fromname":%q, "subject":%q, "bodyhtml":%q, "bodytext":%q, "app":%q, "tmpl":%q, "p0":%q, "p1":%q, "p2":%q, "p3":%q, "p4":%q, "p5":%q, "p6":%q, "p7":%q, "p8":%q, "p9":%q }}`+"\n", err, dTo, dToName, dFrom, dFromName, dSubject, dBodyHtml, dBodyText, dApp, dTmpl, dP0, dP1, dP2, dP3, dP4, dP5, dP6, dP7, dP8, dP9), res, req))
 			return
+		} else if Cfg.LogSuccessfulSend == "y" {
+			fmt.Fprintf(fo, `{"status":"success","msg":"email error","err":%q, "message":{ "to":%q, "toname":%q, "from":%q, "fromname":%q, "subject":%q, "bodyhtml":%q, "bodytext":%q, "app":%q, "tmpl":%q, "p0":%q, "p1":%q, "p2":%q, "p3":%q, "p4":%q, "p5":%q, "p6":%q, "p7":%q, "p8":%q, "p9":%q }}`+"\n", err, dTo, dToName, dFrom, dFromName, dSubject, dBodyHtml, dBodyText, dApp, dTmpl, dP0, dP1, dP2, dP3, dP4, dP5, dP6, dP7, dP8, dP9)
 		}
 	} else {
 		LogIt()
