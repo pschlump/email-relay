@@ -2,6 +2,8 @@
 
 BUILD_NO=$(git rev-list --count HEAD)
 
+echo "BuildNo: $BUILD_NO" >.build_no
+
 for i in $* ; do
 
 	ed $i <<XXxx

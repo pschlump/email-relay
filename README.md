@@ -54,8 +54,32 @@ To use per-ip authorization set *Auth* to "per-ip" then
 
 ```
 
-It will check that the requesting IP is in the set and that the auth_token matches the requried
+It will check that the requesting IP is in the set and that the auth_token matches the required
 password.
+
+You can redirect some email addresses to a predefined address.  The match is performed on the
+suffix of the email address.
+
+``` JSON
+
+	"MapToEmailAddr":[ "@pschlump.com" ],
+	"MapDestAddr":"pschlump@yahoo.com",
+
+```
+
+Will take all email addresses that end in "@pschlump.com" and send them to the alternate
+destination.  This is useful for automated testing where you may want to generate
+t3232323@pschlump.com as an address and then receive it at a known location.
+
+The ability to log all successful emails can be turned on.  By default this is off.
+
+``` JSON
+
+	"LogSuccessfulSend":"y",
+	
+```
+
+Set to a single lower case 'y' and this will log all successful emails to the output.log.
 
 
 ### .email/email-config.json
