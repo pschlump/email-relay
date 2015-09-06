@@ -55,7 +55,7 @@ import (
 	// "www.2c-why.com/go-lib/sizlib" // "../go-lib/sizlib"
 )
 
-const BuildNo = "018"
+const BuildNo = "08"
 
 /*
 
