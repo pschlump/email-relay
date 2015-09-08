@@ -49,7 +49,7 @@ import (
 	tr "github.com/pschlump/godebug"         // "../go-lib/tr" // "www.2c-why.com/go-lib/tr"
 	ms "github.com/pschlump/templatestrings" // "../go-lib/ms"
 
-	"github.com/pschlump/email-relay/filelib" // "./filelib"
+	"github.com/pschlump/filelib"
 
 	"./jsonp"
 
