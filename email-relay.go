@@ -50,8 +50,7 @@ import (
 	ms "github.com/pschlump/templatestrings" // "../go-lib/ms"
 
 	"github.com/pschlump/filelib"
-
-	"./jsonp"
+	"github.com/pschlump/jsonp"
 
 	// "www.2c-why.com/go-lib/sizlib" // "../go-lib/sizlib"
 )
