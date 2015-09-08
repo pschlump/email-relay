@@ -49,7 +49,8 @@ import (
 	tr "github.com/pschlump/godebug"         // "../go-lib/tr" // "www.2c-why.com/go-lib/tr"
 	ms "github.com/pschlump/templatestrings" // "../go-lib/ms"
 
-	"./filelib"
+	"github.com/pschlump/email-relay/filelib" // "./filelib"
+
 	"./jsonp"
 
 	// "www.2c-why.com/go-lib/sizlib" // "../go-lib/sizlib"
