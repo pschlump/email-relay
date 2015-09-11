@@ -11,7 +11,7 @@ All of this is set with configuration files.
 At the present time this only responds to GET requests.  Since the auth_token is passed you should
 only use /api/send with HTTPS.  The current set of certificates that are used are self-signed.
 
-To generate certatificates:
+To generate certificates:
 
 ``` base
 
