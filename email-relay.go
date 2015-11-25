@@ -51,11 +51,11 @@ import (
 
 	"github.com/pschlump/filelib"
 	"github.com/pschlump/jsonp"
-
-	// "www.2c-why.com/go-lib/sizlib" // "../go-lib/sizlib"
 )
 
-const BuildNo = "011"
+// "www.2c-why.com/go-lib/sizlib" // "../go-lib/sizlib"
+
+const BuildNo = "012"
 
 /*
 
@@ -277,7 +277,7 @@ func handleSend(res http.ResponseWriter, req *http.Request) {
 	LogItS(fmt.Sprintf("auth_token from URL:%s Cfg.Auth:%s ", auth_token, Cfg.Auth))
 	if auth_token == Cfg.Auth || (Cfg.Auth == "per-ip" && CheckIpAuth(ip, auth_token)) {
 
-		LogIt()
+		LogItS("AuthToken Good")
 		dTo := params.Get("to")
 		dToName := params.Get("toname")
 		dFrom := params.Get("from")
@@ -298,12 +298,12 @@ func handleSend(res http.ResponseWriter, req *http.Request) {
 		dP8 := params.Get("p8")
 		dP9 := params.Get("p9")
 
-		LogIt()
+		LogItS("Got Params")
 		if dTmpl != "" {
-			LogIt()
+			LogItS("Template Specified")
 
 			if _, ok := Cfg.ApprovedApps[dApp]; dApp == "" || !ok {
-				LogIt()
+				LogItS("Error: Not an approved application")
 				Errs++
 				t := time.Now()
 				ts := t.Format(time.RFC3339)
@@ -315,7 +315,7 @@ func handleSend(res http.ResponseWriter, req *http.Request) {
 			TemplateFn := filepath.Clean(Cfg.TmplPath + filepath.Clean("/"+dApp+"/"+dTmpl))
 
 			if !filelib.Exists(TemplateFn) {
-				LogIt()
+				LogItS("Error: File did not exist for template")
 				Errs++
 				t := time.Now()
 				ts := t.Format(time.RFC3339)
@@ -327,7 +327,7 @@ func handleSend(res http.ResponseWriter, req *http.Request) {
 					return
 				}
 			}
-			LogIt()
+			LogItS("Ok: Run Template Now")
 
 			g_data = make(map[string]interface{})
 			oneRow := make(map[string]interface{})
@@ -368,7 +368,7 @@ func handleSend(res http.ResponseWriter, req *http.Request) {
 			dSubject = RunTemplate(TemplateFn, "subject", oneRow)
 			dBodyHtml = RunTemplate(TemplateFn, "body_html", oneRow)
 			dBodyText = RunTemplate(TemplateFn, "body_text", oneRow)
-			LogIt()
+			LogItS("Setup Complete")
 
 		} else {
 			LogIt()
@@ -419,7 +419,7 @@ func handleSend(res http.ResponseWriter, req *http.Request) {
 		err := Email.To(dTo, dToName).From(dFrom, dFromName).Subject(dSubject).TextBody(dBodyText).HtmlBody(dBodyHtml).SendIt()
 
 		if err != nil {
-			LogIt()
+			LogItS("Error: Got error on email send")
 			Errs++
 			t := time.Now()
 			ts := t.Format(time.RFC3339)
@@ -430,7 +430,7 @@ func handleSend(res http.ResponseWriter, req *http.Request) {
 			fmt.Fprintf(fo, `{"status":"success","msg":"email error","err":%q, "message":{ "to":%q, "toname":%q, "from":%q, "fromname":%q, "subject":%q, "bodyhtml":%q, "bodytext":%q, "app":%q, "tmpl":%q, "p0":%q, "p1":%q, "p2":%q, "p3":%q, "p4":%q, "p5":%q, "p6":%q, "p7":%q, "p8":%q, "p9":%q }}`+"\n", err, dTo, dToName, dFrom, dFromName, dSubject, dBodyHtml, dBodyText, dApp, dTmpl, dP0, dP1, dP2, dP3, dP4, dP5, dP6, dP7, dP8, dP9)
 		}
 	} else {
-		LogIt()
+		LogItS("Error: Not Authorized")
 		Errs++
 		t := time.Now()
 		ts := t.Format(time.RFC3339)
@@ -558,6 +558,10 @@ func RunTemplate(TemplateFn string, name_of string, g_data map[string]interface{
 
 	foo.Flush()
 	s := b.String() // Fetch the data back from the buffer
+
+	LogIt()
+	fmt.Fprintf(fo, "Template Output is: ----->%s<-----\n", s)
+
 	return s
 
 }
@@ -591,7 +595,7 @@ func main() {
 		os.Exit(1)
 	}
 
-	LogIt()
+	LogItS("Before open of log file")
 	fo, err = os.OpenFile(Cfg.LogFile, os.O_RDWR|os.O_APPEND, 0660) // open log file
 	if err != nil {
 		fo, err = os.Create(Cfg.LogFile)
@@ -608,7 +612,7 @@ func main() {
 
 	GlobalCfg["JSON_Prefix"] = "" // more compatability stuff with old config system
 	GlobalCfg["monitor_url"] = Cfg.MonitorURL
-	LogIt()
+	LogItS("Log files open")
 
 	monitorGoRoutine("content-pusher", "setup:5 minute", 60) // automatic monotering to the monotoring server
 
@@ -618,7 +622,7 @@ func main() {
 	http.HandleFunc("/api/reloadConfigFile", handlereloadConfigFile)
 	http.Handle("/", http.FileServer(http.Dir(Cfg.WWWPath)))
 	listen443 := fmt.Sprintf("%s:%s", Cfg.HostIP, Cfg.HttpsPort)
-	LogIt()
+	LogItS("Mux Setup, ready to listen")
 	if filelib.Exists(Cfg.Cert) && filelib.Exists(Cfg.Key) { // if have certs then set up TLS/https
 		LogIt()
 		if Cfg.HostIP == "" {
