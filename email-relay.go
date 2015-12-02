@@ -52,7 +52,7 @@ import (
 	ms "github.com/pschlump/templatestrings"
 )
 
-const BuildNo = "025"
+const BuildNo = "026"
 
 /*
 
@@ -371,6 +371,10 @@ func handleSend(res http.ResponseWriter, req *http.Request) {
 			oneRow["p7"] = dP7
 			oneRow["p8"] = dP8
 			oneRow["p9"] = dP9
+
+			if DbDumpMsg {
+				fmt.Fprintf(fo, "oneRow, %s: %+v\n", tr.LF(), oneRow)
+			}
 
 			dSubject = RunTemplate(TemplateFn, "subject", oneRow)
 			dBodyHtml = RunTemplate(TemplateFn, "body_html", oneRow)
