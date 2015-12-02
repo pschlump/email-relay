@@ -50,9 +50,10 @@ import (
 	"github.com/pschlump/json" //	"encoding/json"
 	"github.com/pschlump/jsonp"
 	ms "github.com/pschlump/templatestrings"
+	"github.com/zerobfd/mailbuilder"
 )
 
-const BuildNo = "029"
+const BuildNo = "030"
 
 /*
 
@@ -442,7 +443,7 @@ func handleSend(res http.ResponseWriter, req *http.Request) {
 			dFrom = Cfg.FromEmailAddr
 		}
 
-		LogItS(fmt.Sprintf("To: %s From %s", dTo, dFrom))
+		LogItS(fmt.Sprintf("To: %s From %s Body %s, line:%s", dTo, dFrom, dBodyHtml, tr.LF()))
 		err := Email.To(dTo, dToName).From(dFrom, dFromName).Subject(dSubject).TextBody(dBodyText).HtmlBody(dBodyHtml).SendIt()
 
 		if err != nil {
@@ -456,6 +457,11 @@ func handleSend(res http.ResponseWriter, req *http.Request) {
 		} else if Cfg.LogSuccessfulSend == "y" {
 			fmt.Fprintf(FoLogFile, `{"status":"success","msg":"email error","err":%q, "message":{ "to":%q, "toname":%q, "from":%q, "fromname":%q, "subject":%q, "bodyhtml":%q, "bodytext":%q, "app":%q, "tmpl":%q, "p0":%q, "p1":%q, "p2":%q, "p3":%q, "p4":%q, "p5":%q, "p6":%q, "p7":%q, "p8":%q, "p9":%q }}`+"\n", err, dTo, dToName, dFrom, dFromName, dSubject, dBodyHtml, dBodyText, dApp, dTmpl, dP0, dP1, dP2, dP3, dP4, dP5, dP6, dP7, dP8, dP9)
 		}
+
+		// Email = em.NewEmFile(opts.EmailCfgFN, false) // no new setup of email system
+		Email.Message = mailbuilder.NewMessage()
+		Email.Message.SetBodyEmpty()
+
 	} else {
 		LogItS("Error: Not Authorized")
 		Errs++
