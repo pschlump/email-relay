@@ -52,7 +52,7 @@ import (
 	ms "github.com/pschlump/templatestrings"
 )
 
-const BuildNo = "027"
+const BuildNo = "028"
 
 /*
 
@@ -109,6 +109,7 @@ var TLS_Up = false
 var Msgs_Sent = 0
 var Errs = 0
 var FoLogFile *os.File
+var FoLogX *os.File
 var startup_timestamp string
 
 // Note: You MUST supply full hard paths for --cfg and --emailCfgFile if you run this program in a chroot jail!
@@ -172,6 +173,7 @@ func ReadCfg(fn string) (Cfg CfgType, err error) {
 	}
 	if DbDumpMsg {
 		fmt.Printf("Cfg: %+v\n", Cfg)
+		fmt.Fprintf(FoLogX, "Cfg: %+v\n", Cfg)
 		Cfg.DebugLog = 3
 	}
 	return
@@ -183,6 +185,8 @@ func LogIt() {
 	if Cfg.DebugLog >= 2 {
 		fmt.Printf("At %s\n", tr.LF(2))
 	}
+	// FoLogX, err = os.OpenFile("/home/emailrelay/tmp/out.out", os.O_RDWR|os.O_APPEND, 0660) // open log file
+	fmt.Fprintf(FoLogX, "At %s\n", tr.LF(2))
 }
 
 // Log and print string if Cfg.Debug >= 2
@@ -190,12 +194,14 @@ func LogItS(s string) {
 	if Cfg.DebugLog >= 2 {
 		fmt.Printf("%s At %s\n", s, tr.LF(2))
 	}
+	fmt.Fprintf(FoLogX, "%s At %s\n", s, tr.LF(2))
 }
 
 func LogItSS(s, t string) {
 	if Cfg.DebugLog >= 2 {
 		fmt.Printf("%s At %s, -->>%s<<--\n", s, tr.LF(2), t)
 	}
+	fmt.Fprintf(FoLogX, "%s At %s, -->>%s<<--\n", s, tr.LF(2), t)
 }
 
 // ===============================================================================================================================================
@@ -250,6 +256,13 @@ func handlereloadConfigFile(res http.ResponseWriter, req *http.Request) {
 				FoLogFile, err = os.OpenFile(Cfg.LogFile, os.O_RDWR|os.O_APPEND, 0660) // open log file
 				if err != nil {
 					FoLogFile, err = os.Create(Cfg.LogFile)
+					if err != nil {
+						panic(err)
+					}
+				}
+				FoLogX, err = os.OpenFile("/home/emailrelay/tmp/out.out", os.O_RDWR|os.O_APPEND, 0660) // open log file
+				if err != nil {
+					FoLogX, err = os.Create("/home/emailrelay/tmp/out.out")
 					if err != nil {
 						panic(err)
 					}
@@ -374,6 +387,7 @@ func handleSend(res http.ResponseWriter, req *http.Request) {
 
 			if DbDumpMsg {
 				fmt.Fprintf(FoLogFile, "oneRow, %s: %+v\n", tr.LF(), oneRow)
+				fmt.Fprintf(FoLogX, "oneRow, %s: %+v\n", tr.LF(), oneRow)
 			}
 
 			dSubject = RunTemplate(TemplateFn, "subject", oneRow)
