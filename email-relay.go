@@ -44,18 +44,15 @@ import (
 
 	template "text/template"
 
-	flags "github.com/jessevdk/go-flags"     // "../go-lib/flags"
-	em "github.com/pschlump/emailbuilder"    // "../go-lib/em"
-	tr "github.com/pschlump/godebug"         // "../go-lib/tr" // "www.2c-why.com/go-lib/tr"
-	ms "github.com/pschlump/templatestrings" // "../go-lib/ms"
-
+	flags "github.com/jessevdk/go-flags"
+	em "github.com/pschlump/emailbuilder"
 	"github.com/pschlump/filelib"
+	tr "github.com/pschlump/godebug"
 	"github.com/pschlump/jsonp"
+	ms "github.com/pschlump/templatestrings"
 )
 
-// "www.2c-why.com/go-lib/sizlib" // "../go-lib/sizlib"
-
-const BuildNo = "020"
+const BuildNo = "021"
 
 /*
 
@@ -188,6 +185,12 @@ func LogIt() {
 func LogItS(s string) {
 	if Cfg.DebugLog >= 2 {
 		fmt.Printf("%s At %s\n", s, tr.LF(2))
+	}
+}
+
+func LogItSS(s, t string) {
+	if Cfg.DebugLog >= 2 {
+		fmt.Printf("%s At %s, -->>%s<<--\n", s, tr.LF(2), t)
 	}
 }
 
@@ -369,6 +372,8 @@ func handleSend(res http.ResponseWriter, req *http.Request) {
 			dBodyHtml = RunTemplate(TemplateFn, "body_html", oneRow)
 			dBodyText = RunTemplate(TemplateFn, "body_text", oneRow)
 			LogItS("Setup Complete")
+			LogItSS("dSubject", dSubject)
+			LogItSS("dBodyHtml", dBodyHtml)
 
 		} else {
 			LogIt()
