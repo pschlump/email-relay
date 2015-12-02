@@ -52,7 +52,7 @@ import (
 	ms "github.com/pschlump/templatestrings"
 )
 
-const BuildNo = "028"
+const BuildNo = "029"
 
 /*
 
@@ -335,7 +335,7 @@ func handleSend(res http.ResponseWriter, req *http.Request) {
 			TemplateFn := filepath.Clean(Cfg.TmplPath + filepath.Clean("/"+dApp+"/"+dTmpl))
 
 			if !filelib.Exists(TemplateFn) {
-				LogItS("Error: File did not exist for template")
+				LogItS(fmt.Sprintf("Error: File did not exist for template, TemplateFileName:%s", TemplateFn))
 				Errs++
 				t := time.Now()
 				ts := t.Format(time.RFC3339)
