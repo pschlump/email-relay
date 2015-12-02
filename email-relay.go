@@ -28,7 +28,6 @@ import (
 	"bufio"
 	"bytes"
 	"crypto/tls"
-	"encoding/json"
 	"errors"
 	"fmt"
 	"io"
@@ -48,11 +47,12 @@ import (
 	em "github.com/pschlump/emailbuilder"
 	"github.com/pschlump/filelib"
 	tr "github.com/pschlump/godebug"
+	"github.com/pschlump/json" //	"encoding/json"
 	"github.com/pschlump/jsonp"
 	ms "github.com/pschlump/templatestrings"
 )
 
-const BuildNo = "021"
+const BuildNo = "022"
 
 /*
 
