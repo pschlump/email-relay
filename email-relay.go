@@ -52,7 +52,7 @@ import (
 	ms "github.com/pschlump/templatestrings"
 )
 
-const BuildNo = "024"
+const BuildNo = "025"
 
 /*
 
@@ -169,6 +169,10 @@ func ReadCfg(fn string) (Cfg CfgType, err error) {
 	if Cfg.DebugLog >= 100 {
 		fmt.Printf("Early Exit - just testing of config\n")
 		os.Exit(0)
+	}
+	if DbDumpMsg {
+		fmt.Printf("Cfg: %+v\n", Cfg)
+		Cfg.DebugLog = 3
 	}
 	return
 }
@@ -659,5 +663,7 @@ func main() {
 	}
 	log.Fatal(http.ListenAndServe(listen, nil))
 }
+
+const DbDumpMsg = true
 
 /* vim: set noai ts=4 sw=4: */
