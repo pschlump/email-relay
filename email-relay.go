@@ -53,7 +53,7 @@ import (
 	"github.com/zerobfd/mailbuilder"
 )
 
-const BuildNo = "031"
+const BuildNo = "032"
 
 /*
 
