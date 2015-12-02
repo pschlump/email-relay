@@ -52,7 +52,7 @@ import (
 	ms "github.com/pschlump/templatestrings"
 )
 
-const BuildNo = "026"
+const BuildNo = "027"
 
 /*
 
@@ -108,7 +108,7 @@ var Email *em.EM
 var TLS_Up = false
 var Msgs_Sent = 0
 var Errs = 0
-var fo *os.File
+var FoLogFile *os.File
 var startup_timestamp string
 
 // Note: You MUST supply full hard paths for --cfg and --emailCfgFile if you run this program in a chroot jail!
@@ -236,20 +236,20 @@ func handlereloadConfigFile(res http.ResponseWriter, req *http.Request) {
 	} else {
 		tCfg, err := ReadCfg(opts.CfgFN) // read in config for this program
 		if err != nil {
-			fmt.Fprintf(fo, "Error on reload of config file, %s\n", err)
+			fmt.Fprintf(FoLogFile, "Error on reload of config file, %s\n", err)
 			io.WriteString(res, `{"status":"error","msg":"error on reload, using old config"}`)
 		} else {
-			fmt.Fprintf(fo, `{"status":"success","msg":"TLS is %v", "version":"1.0.2 BuildNo %s","Msgs":%d, "Errs":%d}`+"\n", TLS_Up, BuildNo, Msgs_Sent, Errs)
-			fo.Close()
+			fmt.Fprintf(FoLogFile, `{"status":"success","msg":"TLS is %v", "version":"1.0.2 BuildNo %s","Msgs":%d, "Errs":%d}`+"\n", TLS_Up, BuildNo, Msgs_Sent, Errs)
+			FoLogFile.Close()
 			Cfg = tCfg
 			Msgs_Sent, Errs = 0, 0
 			err = os.Rename(Cfg.LogFile, Cfg.LogFile+".old")
 			if err != nil {
-				fmt.Fprintf(fo, `{"status":"ErrroOnLogFileRotation","error":%q}`, err)
+				fmt.Fprintf(FoLogFile, `{"status":"ErrroOnLogFileRotation","error":%q}`, err)
 			} else {
-				fo, err = os.OpenFile(Cfg.LogFile, os.O_RDWR|os.O_APPEND, 0660) // open log file
+				FoLogFile, err = os.OpenFile(Cfg.LogFile, os.O_RDWR|os.O_APPEND, 0660) // open log file
 				if err != nil {
-					fo, err = os.Create(Cfg.LogFile)
+					FoLogFile, err = os.Create(Cfg.LogFile)
 					if err != nil {
 						panic(err)
 					}
@@ -314,7 +314,7 @@ func handleSend(res http.ResponseWriter, req *http.Request) {
 				Errs++
 				t := time.Now()
 				ts := t.Format(time.RFC3339)
-				fmt.Fprintf(fo, "Error: InvalidApp: %s %q %s\n", ip, dApp, ts)
+				fmt.Fprintf(FoLogFile, "Error: InvalidApp: %s %q %s\n", ip, dApp, ts)
 				io.WriteString(res, jsonp.JsonP(`{"status":"error","msg":"missing invalid app error"}`+"\n", res, req))
 				return
 			}
@@ -326,7 +326,7 @@ func handleSend(res http.ResponseWriter, req *http.Request) {
 				Errs++
 				t := time.Now()
 				ts := t.Format(time.RFC3339)
-				fmt.Fprintf(fo, "Error: MissingTemplate: %s %q %s\n", ip, TemplateFn, ts)
+				fmt.Fprintf(FoLogFile, "Error: MissingTemplate: %s %q %s\n", ip, TemplateFn, ts)
 				io.WriteString(res, jsonp.JsonP(`{"status":"error","msg":"missing email template error"}`+"\n", res, req))
 				if db_send_to_me {
 					TemplateFn = "./debug.tmpl"
@@ -373,7 +373,7 @@ func handleSend(res http.ResponseWriter, req *http.Request) {
 			oneRow["p9"] = dP9
 
 			if DbDumpMsg {
-				fmt.Fprintf(fo, "oneRow, %s: %+v\n", tr.LF(), oneRow)
+				fmt.Fprintf(FoLogFile, "oneRow, %s: %+v\n", tr.LF(), oneRow)
 			}
 
 			dSubject = RunTemplate(TemplateFn, "subject", oneRow)
@@ -418,7 +418,7 @@ func handleSend(res http.ResponseWriter, req *http.Request) {
 				Errs++
 				t := time.Now()
 				ts := t.Format(time.RFC3339)
-				fmt.Fprintf(fo, "Error: MissingParam: %s %q %s\n", ip, dTo, ts)
+				fmt.Fprintf(FoLogFile, "Error: MissingParam: %s %q %s\n", ip, dTo, ts)
 				io.WriteString(res, jsonp.JsonP(`{"status":"error","msg":"missing parameter error"}`+"\n", res, req))
 				return
 			}
@@ -436,18 +436,18 @@ func handleSend(res http.ResponseWriter, req *http.Request) {
 			Errs++
 			t := time.Now()
 			ts := t.Format(time.RFC3339)
-			fmt.Fprintf(fo, "Error: EmailError: %s %q %s\n", ip, err, ts)
+			fmt.Fprintf(FoLogFile, "Error: EmailError: %s %q %s\n", ip, err, ts)
 			io.WriteString(res, jsonp.JsonP(fmt.Sprintf(`{"status":"error","msg":"email error","err":%q, "message":{ "to":%q, "toname":%q, "from":%q, "fromname":%q, "subject":%q, "bodyhtml":%q, "bodytext":%q, "app":%q, "tmpl":%q, "p0":%q, "p1":%q, "p2":%q, "p3":%q, "p4":%q, "p5":%q, "p6":%q, "p7":%q, "p8":%q, "p9":%q }}`+"\n", err, dTo, dToName, dFrom, dFromName, dSubject, dBodyHtml, dBodyText, dApp, dTmpl, dP0, dP1, dP2, dP3, dP4, dP5, dP6, dP7, dP8, dP9), res, req))
 			return
 		} else if Cfg.LogSuccessfulSend == "y" {
-			fmt.Fprintf(fo, `{"status":"success","msg":"email error","err":%q, "message":{ "to":%q, "toname":%q, "from":%q, "fromname":%q, "subject":%q, "bodyhtml":%q, "bodytext":%q, "app":%q, "tmpl":%q, "p0":%q, "p1":%q, "p2":%q, "p3":%q, "p4":%q, "p5":%q, "p6":%q, "p7":%q, "p8":%q, "p9":%q }}`+"\n", err, dTo, dToName, dFrom, dFromName, dSubject, dBodyHtml, dBodyText, dApp, dTmpl, dP0, dP1, dP2, dP3, dP4, dP5, dP6, dP7, dP8, dP9)
+			fmt.Fprintf(FoLogFile, `{"status":"success","msg":"email error","err":%q, "message":{ "to":%q, "toname":%q, "from":%q, "fromname":%q, "subject":%q, "bodyhtml":%q, "bodytext":%q, "app":%q, "tmpl":%q, "p0":%q, "p1":%q, "p2":%q, "p3":%q, "p4":%q, "p5":%q, "p6":%q, "p7":%q, "p8":%q, "p9":%q }}`+"\n", err, dTo, dToName, dFrom, dFromName, dSubject, dBodyHtml, dBodyText, dApp, dTmpl, dP0, dP1, dP2, dP3, dP4, dP5, dP6, dP7, dP8, dP9)
 		}
 	} else {
 		LogItS("Error: Not Authorized")
 		Errs++
 		t := time.Now()
 		ts := t.Format(time.RFC3339)
-		fmt.Fprintf(fo, "Error: NotAuthorized: %s %q %s\n", ip, auth_token, ts)
+		fmt.Fprintf(FoLogFile, "Error: NotAuthorized: %s %q %s\n", ip, auth_token, ts)
 		io.WriteString(res, jsonp.JsonP(`{"status":"error","msg":"Invalid authorization(1)"}`+"\n", res, req))
 		return
 	}
@@ -573,7 +573,7 @@ func RunTemplate(TemplateFn string, name_of string, g_data map[string]interface{
 	s := b.String() // Fetch the data back from the buffer
 
 	LogIt()
-	fmt.Fprintf(fo, "Template Output is: ----->%s<-----\n", s)
+	fmt.Fprintf(FoLogFile, "Template Output is: ----->%s<-----\n", s)
 
 	return s
 
@@ -609,16 +609,16 @@ func main() {
 	}
 
 	LogItS("Before open of log file")
-	fo, err = os.OpenFile(Cfg.LogFile, os.O_RDWR|os.O_APPEND, 0660) // open log file
+	FoLogFile, err = os.OpenFile(Cfg.LogFile, os.O_RDWR|os.O_APPEND, 0660) // open log file
 	if err != nil {
-		fo, err = os.Create(Cfg.LogFile)
+		FoLogFile, err = os.Create(Cfg.LogFile)
 		if err != nil {
 			panic(err)
 		}
 	}
 	// close fo on exit and check for its returned error
 	defer func() {
-		if err := fo.Close(); err != nil {
+		if err := FoLogFile.Close(); err != nil {
 			panic(err)
 		}
 	}()
