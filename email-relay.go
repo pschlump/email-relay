@@ -53,7 +53,7 @@ import (
 	"github.com/zerobfd/mailbuilder"
 )
 
-const BuildNo = "030"
+const BuildNo = "031"
 
 /*
 
@@ -679,6 +679,9 @@ func main() {
 		}()
 	}
 	LogIt()
+
+	fmt.Printf("\n====================================================\nBuildNo=%s\n====================================================\n", BuildNo)
+
 	listen := fmt.Sprintf("%s:%s", Cfg.HostIP, Cfg.Port) // Listen on http
 	if Cfg.HostIP == "" {
 		fmt.Printf("Serving on port %s\n", Cfg.Port)
