@@ -53,7 +53,7 @@ import (
 	"github.com/zerobfd/mailbuilder"
 )
 
-const BuildNo = "032"
+const BuildNo = "033"
 
 /*
 
@@ -105,7 +105,8 @@ var db_send_to_me = false
 
 var Cfg CfgType
 var GlobalCfg map[string]string
-var Email *em.EM
+
+// var Email *em.EM
 var TLS_Up = false
 var Msgs_Sent = 0
 var Errs = 0
@@ -443,6 +444,15 @@ func handleSend(res http.ResponseWriter, req *http.Request) {
 			dFrom = Cfg.FromEmailAddr
 		}
 
+		var Email *em.EM
+
+		Email = em.NewEmFile(opts.EmailCfgFN, true) // setup email system
+		if Email.Err != nil {
+			LogItS("Error: email send - failed to configure email sender")
+			fmt.Printf("Fatal: Email is not properly configured, failed to load config file (%s). %s\n", opts.EmailCfgFN, Email.Err)
+			return
+		}
+
 		LogItS(fmt.Sprintf("To: %s From %s Body %s, line:%s", dTo, dFrom, dBodyHtml, tr.LF()))
 		err := Email.To(dTo, dToName).From(dFrom, dFromName).Subject(dSubject).TextBody(dBodyText).HtmlBody(dBodyHtml).SendIt()
 
@@ -616,11 +626,13 @@ func main() {
 		os.Exit(1)
 	}
 
-	Email = em.NewEmFile(opts.EmailCfgFN, true) // setup email system
-	if Email.Err != nil {
-		fmt.Printf("Fatal: Email is not properly configured, failed to load config file (%s). %s\n", opts.EmailCfgFN, Email.Err)
-		os.Exit(1)
-	}
+	// xyzzy1000
+
+	//	Email = em.NewEmFile(opts.EmailCfgFN, true) // setup email system
+	//	if Email.Err != nil {
+	//		fmt.Printf("Fatal: Email is not properly configured, failed to load config file (%s). %s\n", opts.EmailCfgFN, Email.Err)
+	//		os.Exit(1)
+	//	}
 
 	Cfg, err = ReadCfg(opts.CfgFN) // read in config for this program
 	if err != nil {
