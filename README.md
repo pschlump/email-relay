@@ -1,5 +1,8 @@
 # Email Relay 
 
+
+ [![license](http://img.shields.io/badge/license-MIT-red.svg?style=flat)](https://raw.githubusercontent.com/pschlump/Go-FTL/master/LICENSE)
+
 ## Overview
 
 email-relay converts HTTPS get requests into SMTP to send email.  A system of templating is provided.
