@@ -6,7 +6,7 @@ all:
 # This really only applies to my internal development environment and cross compiling for it.
 push_up:
 	go build
-	git commit -m "Set Build No on files." .
+	-git commit -m "Set Build No on files." .
 	./updBuildNo.sh email-relay.go
 	-rm ~/email-relay.linux  
 	tar -czf ~/x.tar *.go 
